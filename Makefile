@@ -23,7 +23,7 @@ $(TARGET): $(OBJS)
 number_to_words_main.o: number_to_words_main.c value_to_string_conversions.h cache.h constants.h
 	$(CC) $(CFLAGS) -c number_to_words_main.c -o number_to_words_main.o
 
-value_to_string_conversions.o: value_to_string_conversions.c value_to_string_conversions.h constants.h cache.h
+value_to_string_conversions.o: value_to_string_conversions.c value_to_string_conversions.h constants.h
 	$(CC) $(CFLAGS) -c value_to_string_conversions.c -o value_to_string_conversions.o
 
 cache.o: cache.c cache.h 

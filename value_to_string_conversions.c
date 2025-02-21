@@ -1,11 +1,11 @@
-#include <stdio.h> 
 #include "value_to_string_conversions.h"
 
 // ========= CENTS_TO_STRING ============= //
 // This function takes in the total cents  //
 // (represented by the last two digits of  //
 // the input integer) and converts it to a //
-// text string.                            //
+// text string. Returns a pointer to that  //
+// string to the caller                    //
 // ======================================= //
 
 char* cents_to_string(long long int total_cents) {
@@ -54,7 +54,8 @@ char* cents_to_string(long long int total_cents) {
 // (represented by the digits remaining      //
 // after the last two digits of the input    //
 // are removed) and converts it to a text    //
-// string.                                   //
+// string. Returns a pointer to that string  //
+// to the caller.                            //
 // ========================================= //
 
 char* dollars_to_string(long long int total_dollars) {

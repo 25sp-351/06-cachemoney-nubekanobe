@@ -1,4 +1,5 @@
 #include "value_to_string_conversions.h"
+#include "cache.h"
 
 // ==============FUNCTION POINTERS================//
 
@@ -85,12 +86,12 @@ char* number_to_string(long long int money_value_as_integer) {
     char* cents = (*cent_provider)(total_cents);
 
     if (money_value_as_integer < MINIMUM_FOR_DOLLARS) {  
-        strcpy(result, cents); 
+        strcpy_s(result, BUFFER_SIZE, cents); 
         return result; 
     }
 
     if (money_value_as_integer >= MINIMUM_FOR_DOLLARS && total_cents == 0) {
-        strcpy(result, dollars);  
+        strcpy_s(result, BUFFER_SIZE, dollars);  
         return result;
     }
 

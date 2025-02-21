@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "cache.h"
 #include "constants.h"
 
 char* cents_to_string(long long int total_cents);   

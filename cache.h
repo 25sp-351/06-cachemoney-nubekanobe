@@ -1,8 +1,7 @@
 #ifndef CACHE_H
 #define CACHE_H
 
-#include <stdlib.h>
-#include <string.h>
+#include <stdio.h> 
 
 #define MAX_DOLLAR_MEMO_ENTRIES 1501
 #define MAX_CENT_MEMO_ENTRIES 100
@@ -17,8 +16,6 @@ extern string_conversion_fnc original_dollar_provider;
 
 // Function prototypes for memoization
 void initialize_cache(); 
-void check_memoized_values(char** memo, int max_entries); 
-void free_memo(char** memo, int max_entries);
 void print_cache(); 
 char* cached_dollars(long long total_dollars); 
 char* cached_cents(long long total_cents); 
