@@ -1,8 +1,8 @@
- #include "cache.h"
+#include <stdio.h> 
+#include "cache.h"
 
 char dollar_cache[MAX_DOLLAR_MEMO_ENTRIES][BUFFER_SIZE];
 char cent_cache[MAX_CENT_MEMO_ENTRIES][BUFFER_SIZE];
-
 
 // ========= GET_FROM_CACHE ============ //
 // Take a key that represents either a   //
@@ -80,12 +80,12 @@ char* cached_dollars(long long int key) {
 // the value into the cache.             // 
 // ===================================== // 
 
-char* cached_cents(long long int total_cents) {
-    char* result = get_from_cache(total_cents, cent_cache); 
+char* cached_cents(long long int key) {
+    char* result = get_from_cache(key, cent_cache); 
     
     if (!result) {
-        result = (*original_cent_provider)(total_cents);  // Call the original function if not cached
-        store_in_cache(total_cents, result, cent_cache);  // Store in cent cache
+        result = (*original_cent_provider)(key);  // Call the original function if not cached
+        store_in_cache(key, result, cent_cache);  // Store in cent cache
     }
     return result;
 }

@@ -1,8 +1,6 @@
 #ifndef CACHE_H
 #define CACHE_H
 
-#include <stdio.h> 
-
 #define MAX_DOLLAR_MEMO_ENTRIES 1501
 #define MAX_CENT_MEMO_ENTRIES 100
 #define BUFFER_SIZE 150

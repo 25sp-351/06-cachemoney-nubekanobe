@@ -20,7 +20,7 @@ $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET)
 
 # Compile source files to object files
-number_to_words_main.o: number_to_words_main.c value_to_string_conversions.h cache.h constants.h
+number_to_words_main.o: number_to_words_main.c value_to_string_conversions.h cache.h
 	$(CC) $(CFLAGS) -c number_to_words_main.c -o number_to_words_main.o
 
 value_to_string_conversions.o: value_to_string_conversions.c value_to_string_conversions.h constants.h

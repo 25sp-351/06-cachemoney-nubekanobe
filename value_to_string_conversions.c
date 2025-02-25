@@ -1,4 +1,22 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "value_to_string_conversions.h"
+#include "constants.h"
+
+// arrays of strings to represent integers
+const char* ones_and_teens[] = {
+    "", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
+    "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", 
+    "eighteen", "nineteen"
+};
+
+const char* tens[] = {
+    "", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"
+};
+
+const char* thousand_multiplier[] = {"", "thousand", "million", "billion"}; 
+
 
 // ========= CENTS_TO_STRING ============= //
 // This function takes in the total cents  //
@@ -12,19 +30,9 @@ char* cents_to_string(long long int total_cents) {
 
     static char cents_string[BUFFER_SIZE]; 
     cents_string[0] = '\0';
-    
-    static char* ones_and_teens[] = {
-        "", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
-        "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", 
-        "eighteen", "nineteen"      
-    };
-
-    static char* tens[] = {
-        "", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"      
-    };
 
     if(total_cents == 1){
-        snprintf(cents_string, BUFFER_SIZE, "one cent"); 
+        strcpy_s(cents_string, BUFFER_SIZE, "one cent"); 
         return cents_string; 
     }
 
@@ -62,18 +70,6 @@ char* dollars_to_string(long long int total_dollars) {
     
     static char dollars_string[BUFFER_SIZE]; 
     dollars_string[0] = '\0';
-    
-    static char* ones_and_teens[] = {
-        "", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
-        "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", 
-        "eighteen", "nineteen"      
-    };
-
-    static char* tens[] = {
-        "", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"      
-    };
-
-    static char* thousand_multiplier[] = {"", "thousand", "million", "billion"}; 
 
     int multiplier = 0;
     char current_segment[BUFFER_SIZE] = "";
@@ -84,7 +80,7 @@ char* dollars_to_string(long long int total_dollars) {
     }
 
     if(total_dollars == 1){
-        snprintf(dollars_string, BUFFER_SIZE, "one dollar"); 
+        strcpy_s(dollars_string, BUFFER_SIZE, "one dollar"); 
         return dollars_string; 
     }
 
@@ -102,23 +98,25 @@ char* dollars_to_string(long long int total_dollars) {
         long long int dollar_tens = (total_dollars / DIGIT_SEPERATOR) % DIGIT_SEPERATOR; 
         long long int dollar_ones = total_dollars % DIGIT_SEPERATOR;
 
-        if(dollar_hundreds > 0)
-            sprintf(current_segment + strlen(current_segment), "%s hundred ", ones_and_teens[dollar_hundreds]);
+        int REMAINING_BUFFER = (BUFFER_SIZE - strlen(current_segment)); 
         
-        if(dollar_tens == 1)
-            sprintf(current_segment + strlen(current_segment), "%s ", ones_and_teens[dollar_ones + TEEN_INDEX_OFFSET]);
-        
-        if(dollar_tens > 1 && dollar_ones == 0)
-            sprintf(current_segment + strlen(current_segment), "%s ", tens[dollar_tens]);
+        if (dollar_hundreds > 0)
+        snprintf(current_segment + strlen(current_segment), REMAINING_BUFFER, "%s hundred ", ones_and_teens[dollar_hundreds]);
 
-        if(dollar_tens > 1 && dollar_ones > 0)
-            sprintf(current_segment + strlen(current_segment), "%s-%s ", tens[dollar_tens], ones_and_teens[dollar_ones]);
-        
-        if(dollar_tens == 0 && dollar_ones > 0)
-            sprintf(current_segment + strlen(current_segment), "%s ", ones_and_teens[dollar_ones]);
+        if (dollar_tens == 1)
+        snprintf(current_segment + strlen(current_segment), REMAINING_BUFFER, "%s ", ones_and_teens[dollar_ones + TEEN_INDEX_OFFSET]);
 
-        if (multiplier > 0) 
-            sprintf(current_segment + strlen(current_segment), "%s ", thousand_multiplier[multiplier]);
+        if (dollar_tens > 1 && dollar_ones == 0)
+        snprintf(current_segment + strlen(current_segment), REMAINING_BUFFER, "%s ", tens[dollar_tens]);
+
+        if (dollar_tens > 1 && dollar_ones > 0)
+        snprintf(current_segment + strlen(current_segment), REMAINING_BUFFER, "%s-%s ", tens[dollar_tens], ones_and_teens[dollar_ones]);
+
+        if (dollar_tens == 0 && dollar_ones > 0)
+        snprintf(current_segment + strlen(current_segment), REMAINING_BUFFER, "%s ", ones_and_teens[dollar_ones]);
+
+        if (multiplier > 0)
+        snprintf(current_segment + strlen(current_segment), REMAINING_BUFFER, "%s ", thousand_multiplier[multiplier]);
         
 
         total_dollars = total_dollars / THOUSAND_MULTIPLE_SEPERATOR;

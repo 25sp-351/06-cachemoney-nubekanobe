@@ -1,5 +1,8 @@
+#include <string.h>
+#include <stdio.h> 
 #include "value_to_string_conversions.h"
 #include "cache.h"
+#include "constants.h"
 
 // ==============FUNCTION POINTERS================//
 
