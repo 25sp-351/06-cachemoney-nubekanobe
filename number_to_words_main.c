@@ -8,8 +8,6 @@
 
 to_string_fnc assigned_large_provider = NULL;
 to_string_fnc assigned_small_provider = NULL;
-to_string_fnc original_large_provider = NULL;
-to_string_fnc original_small_provider = NULL;
 
 // ============= PROTOTYPES ======================//
 

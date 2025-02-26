@@ -5,6 +5,9 @@
 ValueType* large_cache;
 ValueType* small_cache;
 
+to_string_fnc original_large_provider; 
+to_string_fnc original_small_provider; 
+
 // ====== INITIALIZE_CACHE ============ //
 // Initialize cache to empty strings    //
 // ==================================== //
