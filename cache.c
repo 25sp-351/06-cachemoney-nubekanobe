@@ -5,14 +5,11 @@
 ValueType* large_cache;
 ValueType* small_cache;
 
-to_string_fnc original_large_provider = NULL; 
-to_string_fnc original_small_provider = NULL;
-
 // ====== INITIALIZE_CACHE ============ //
 // Initialize cache to empty strings    //
 // ==================================== //
 
-void initialize(void){
+void initialize_cache(to_string_fnc og_large_provider, to_string_fnc og_small_provider){
 
     large_cache = (char**)malloc(MAX_LARGE_MEMO_ENTRIES * sizeof(char*));
     small_cache = (char**)malloc(MAX_SMALL_MEMO_ENTRIES * sizeof(char*));
@@ -27,18 +24,11 @@ void initialize(void){
         small_cache[ix][0] = '\0'; 
     }
 
-}
+    assigned_large_provider = large_cache_provider;
+    assigned_small_provider = small_cache_provider; 
+    original_large_provider = og_large_provider; 
+    original_small_provider = og_small_provider; 
 
-
-// ========= SET_PROVIDER ============= //
-// Set the original function pointer    //
-// to the cache provider, and return    //
-// the caching provider.                // 
-// ==================================== //
-
-ProviderFunction set_provider(ProviderFunction downstream) {
-    original_large_provider = downstream;
-    return large_cache_provider;
 }
 
 // ========= LARGE_CACHE_PROVIDER ====== //

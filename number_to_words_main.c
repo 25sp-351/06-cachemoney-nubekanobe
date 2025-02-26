@@ -1,20 +1,18 @@
 #include <string.h>
 #include <stdio.h>
-#include <windows.h>
 #include "value_to_string_conversions.h"
+#include "cache.h"
 #include "constants.h"
 
 // ==============FUNCTION POINTERS================//
-typedef char* (*to_string_fnc)(long long int); 
+
 to_string_fnc assigned_large_provider = NULL;
 to_string_fnc assigned_small_provider = NULL;
-
-void(*initialize)(void); 
-to_string_fnc(*set_provider)(to_string_fnc downstream);
+to_string_fnc original_large_provider = NULL;
+to_string_fnc original_small_provider = NULL;
 
 // ============= PROTOTYPES ======================//
 
-void load_cache_module(); 
 char *number_to_string(long long int money_value_as_integer);
 
 // ================== MAIN ======================== //
@@ -32,8 +30,6 @@ int main(int argc, char *argv[])
         printf("Unexpected argument provided");
         return 1;
     };
-
-    load_cache_module(); 
 
     assigned_large_provider = dollars_to_string;
     assigned_small_provider = cents_to_string;
@@ -115,27 +111,4 @@ char *number_to_string(long long int money_value_as_integer)
     }
 
     return result;
-}
-
-
-
-void load_cache_module(){
-
-    HMODULE cache_module = LoadLibrary("./cache.dll");
-
-    if(cache_module == NULL){
-        printf("Failed to load cache module\n");
-        return; 
-    }
-
-    initialize = (void(*)(void))GetProcAddress(cache_module, "initialize");
-    set_provider = (to_string_fnc(*)(to_string_fnc))GetProcAddress(cache_module, "set_provider");
-
-    if(initialize == NULL || set_provider == NULL){
-        printf("Failed to load cache module functions\n");
-        return; 
-    }
-
-    initialize(); 
-    
 }
