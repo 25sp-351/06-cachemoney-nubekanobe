@@ -22,17 +22,18 @@ char *number_to_string(long long int money_value_as_integer);
 
 int main(int argc, char *argv[])
 {
-
     if (argc > 1)
     {
         printf("Unexpected argument provided");
         return 1;
     };
 
+    // Initializing function pointers
     assigned_large_provider = dollars_to_string;
     assigned_small_provider = cents_to_string;
 
-    initialize_cache(dollars_to_string, cents_to_string);
+    // Initilizing memory for cache and assign function pointers
+    initialize_cache(&assigned_large_provider, &assigned_small_provider);
 
     char buffer[BUFFER_SIZE];
     long long int money_value_as_integer = 0;
@@ -59,7 +60,7 @@ int main(int argc, char *argv[])
     }
 
     // DEBUG
-    // print_cache();
+    //print_cache();
     free_cache(); 
 
     return 0;

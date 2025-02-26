@@ -2,17 +2,27 @@
 #include <stdlib.h>
 #include "cache.h"
 
+// ===== Arrays to store cache values ===== //
 ValueType* large_cache;
 ValueType* small_cache;
 
-to_string_fnc original_large_provider; 
-to_string_fnc original_small_provider; 
+// Function pointers to store original providers //
+to_string_fnc original_large_provider = NULL;
+to_string_fnc original_small_provider = NULL;
 
-// ====== INITIALIZE_CACHE ============ //
-// Initialize cache to empty strings    //
-// ==================================== //
+// ========= Function prototypes ========= //
+ValueType large_cache_provider(KeyType key); 
+ValueType small_cache_provider(KeyType key); 
+void store_in_cache(KeyType key, ValueType value, ValueType* cache); 
+ValueType get_from_cache(KeyType key, ValueType* cache); 
 
-void initialize_cache(to_string_fnc og_large_provider, to_string_fnc og_small_provider){
+// ======== INITIALIZE_CACHE ============= //
+// Allocate memory and initialize with     //
+// empty strings. Assign function pointers // 
+// to the original providers.              //
+// ======================================= //
+
+void initialize_cache(to_string_fnc* assigned_large_provider, to_string_fnc* assigned_small_provider){
 
     large_cache = (char**)malloc(MAX_LARGE_MEMO_ENTRIES * sizeof(char*));
     small_cache = (char**)malloc(MAX_SMALL_MEMO_ENTRIES * sizeof(char*));
@@ -27,10 +37,11 @@ void initialize_cache(to_string_fnc og_large_provider, to_string_fnc og_small_pr
         small_cache[ix][0] = '\0'; 
     }
 
-    assigned_large_provider = large_cache_provider;
-    assigned_small_provider = small_cache_provider; 
-    original_large_provider = og_large_provider; 
-    original_small_provider = og_small_provider; 
+    original_large_provider = *assigned_large_provider; 
+    original_small_provider = *assigned_small_provider; 
+    *assigned_large_provider = large_cache_provider;
+    *assigned_small_provider = small_cache_provider; 
+  
 
 }
 
@@ -47,11 +58,12 @@ void initialize_cache(to_string_fnc og_large_provider, to_string_fnc og_small_pr
 // the value into the cache.             // 
 // ===================================== // 
 
-char* large_cache_provider(KeyType key) {
-    char* result = get_from_cache(key, large_cache);
+ValueType large_cache_provider(KeyType key) {
+    ValueType result = get_from_cache(key, large_cache);
 
-    if (!result) {
+    if (result == NULL) {
         result = (*original_large_provider)(key);
+
         if(key >= 0 && key <= MAX_LARGE_MEMO_ENTRIES)
             store_in_cache(key, result, large_cache);  
     }
@@ -71,24 +83,24 @@ char* large_cache_provider(KeyType key) {
 // the value into the cache.             // 
 // ===================================== // 
 
-char* small_cache_provider(KeyType key) {
-    char* result = get_from_cache(key, small_cache); 
+ValueType small_cache_provider(KeyType key) {
+    ValueType result = get_from_cache(key, small_cache); 
     
-    if (!result) {
-        result = (*original_small_provider)(key);  // Call the original function if not cached
-        store_in_cache(key, result, small_cache);  // Store in cent cache
+    if (result == NULL) {
+        result = (*original_small_provider)(key);
+
+        store_in_cache(key, result, small_cache);  
     }
     return result;
 }
 
 // ========= GET_FROM_CACHE ============ //
-// Take a key that represents either a   //
-// dollar or cent value, and validates   //
-// that it is within bounds. Returns the //
-// value stored at that index.           //
+// Take a key that and validates that it //
+// is within bounds. Returns the value   // 
+// stored at that index.                 //
 // ===================================== // 
 
-char* get_from_cache(KeyType key, ValueType* cache) {
+ValueType get_from_cache(KeyType key, ValueType* cache) {
    
     if (key < 0 || key >= MAX_LARGE_MEMO_ENTRIES)
         return NULL; 
@@ -97,20 +109,18 @@ char* get_from_cache(KeyType key, ValueType* cache) {
         return cache[key];
     }
 
-    return NULL;  // Not found in cache
+    return NULL;  
 }
 
 // ========= STORE_IN_CACHE ============ //
-// Take a key that represents either a   //
-// dollar or cent value, a value         //
-// associated with that key, and a cache //
-// to store that value.                  //
+// Take a key, a value associated with   //
+// that key, and a cache to store that   //
+// value.                                //
 //                                       //
 // Validates that the key is within      // 
 // bounds, and stores the value at that  //
 // key index.                            //
 // ===================================== // 
-
 
 void store_in_cache(KeyType key, ValueType value, ValueType* cache) {
 
@@ -145,7 +155,7 @@ void print_cache(){
 }
 
 // =========== FREE_CACHE ============ //
-// Deallocate memory                   //
+// Deallocate memory used for caches   //
 // =================================== // 
 
 void free_cache() {

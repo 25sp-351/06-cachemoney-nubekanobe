@@ -4,7 +4,17 @@
 #include "value_to_string_conversions.h"
 #include "constants.h"
 
-// arrays of strings to represent integers
+// =============  Function prototype ================ // 
+
+void prepend_string(char* destination, char* source);
+
+// ===== Declaring arrays used to build strings======= //
+
+static char cents_string[BUFFER_SIZE]; 
+static char dollars_string[BUFFER_SIZE];
+
+// strings represent integers for conversion to string //
+
 const char* ones_and_teens[] = {
     "", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
     "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", 
@@ -17,7 +27,6 @@ const char* tens[] = {
 
 const char* thousand_multiplier[] = {"", "thousand", "million", "billion"}; 
 
-
 // ========= CENTS_TO_STRING ============= //
 // This function takes in the total cents  //
 // (represented by the last two digits of  //
@@ -28,7 +37,6 @@ const char* thousand_multiplier[] = {"", "thousand", "million", "billion"};
 
 char* cents_to_string(long long int total_cents) {
 
-    static char cents_string[BUFFER_SIZE]; 
     cents_string[0] = '\0';
 
     if(total_cents == 1){
@@ -56,7 +64,6 @@ char* cents_to_string(long long int total_cents) {
     return cents_string; 
 }
 
-
 // ========= DOLLARS_TO_STRING ============= //
 // This function takes in the total dollars  //
 // (represented by the digits remaining      //
@@ -67,8 +74,7 @@ char* cents_to_string(long long int total_cents) {
 // ========================================= //
 
 char* dollars_to_string(long long int total_dollars) {
-    
-    static char dollars_string[BUFFER_SIZE]; 
+     
     dollars_string[0] = '\0';
 
     int multiplier = 0;
@@ -139,7 +145,6 @@ char* dollars_to_string(long long int total_dollars) {
 // dollars_to_string function builds the //
 // string in reverse order.              // 
 // ===================================== //
-
 
 void prepend_string(char* destination, char* segment_to_prepend) {
 
