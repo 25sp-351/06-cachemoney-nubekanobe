@@ -1,20 +1,40 @@
 #include <stdio.h> 
 #include <stdlib.h>
+#include <dlfcn.h>
 #include "cache.h"
 
-// ===== Arrays to store cache values ===== //
-ValueType* large_cache;
-ValueType* small_cache;
+// ===== Arrays to store cached values ===== //
+ValueType* large_values_cache;
+ValueType* small_values_cache;
 
 // Function pointers to store original providers //
 to_string_fnc original_large_provider = NULL;
 to_string_fnc original_small_provider = NULL;
 
-// ========= Function prototypes ========= //
+// ======== Cache functions =============== //
 ValueType large_cache_provider(KeyType key); 
 ValueType small_cache_provider(KeyType key); 
-void store_in_cache(KeyType key, ValueType value, ValueType* cache); 
-ValueType get_from_cache(KeyType key, ValueType* cache); 
+void initialize_cache();
+void store_in_cache(KeyType key, ValueType value, ValueType* cache, int max_size); 
+ValueType get_from_cache(KeyType key, ValueType* cache, int max_size); 
+void print_cache();
+void free_cache();
+
+
+// ========= SET_PROVIDER_FUNCTION ======= //
+// Sets the assigned provider to the cache //
+// provider functions.                    //
+// ======================================= //
+
+void set_provider(provider_set *provider) {
+  
+    original_large_provider = provider->large_values_provider;
+    original_small_provider = provider->small_values_provider;
+    provider->large_values_provider = large_cache_provider;
+    provider->small_values_provider = small_cache_provider;
+
+    initialize_cache();
+}
 
 // ======== INITIALIZE_CACHE ============= //
 // Allocate memory and initialize with     //
@@ -22,27 +42,21 @@ ValueType get_from_cache(KeyType key, ValueType* cache);
 // to the original providers.              //
 // ======================================= //
 
-void initialize_cache(to_string_fnc* assigned_large_provider, to_string_fnc* assigned_small_provider){
+void initialize_cache(){
 
-    large_cache = (char**)malloc(MAX_LARGE_MEMO_ENTRIES * sizeof(char*));
-    small_cache = (char**)malloc(MAX_SMALL_MEMO_ENTRIES * sizeof(char*));
+    large_values_cache = (char**)malloc(MAX_LARGE_MEMO_ENTRIES * sizeof(char*));
+    small_values_cache = (char**)malloc(MAX_SMALL_MEMO_ENTRIES * sizeof(char*));
 
     for (int ix = 0; ix < MAX_LARGE_MEMO_ENTRIES; ix++) {
-        large_cache[ix] = (char*)malloc(BUFFER_SIZE * sizeof(char));
-        large_cache[ix][0] = '\0'; 
+        large_values_cache[ix] = (char*)malloc(BUFFER_SIZE * sizeof(char));
+        large_values_cache[ix][0] = '\0'; 
+         
     }
 
     for (int ix = 0; ix < MAX_SMALL_MEMO_ENTRIES; ix++) {
-        small_cache[ix] = (char*)malloc(BUFFER_SIZE * sizeof(char));
-        small_cache[ix][0] = '\0'; 
+        small_values_cache[ix] = (char*)malloc(BUFFER_SIZE * sizeof(char));
+        small_values_cache[ix][0] = '\0';  
     }
-
-    original_large_provider = *assigned_large_provider; 
-    original_small_provider = *assigned_small_provider; 
-    *assigned_large_provider = large_cache_provider;
-    *assigned_small_provider = small_cache_provider; 
-  
-
 }
 
 // ========= LARGE_CACHE_PROVIDER ====== //
@@ -59,13 +73,15 @@ void initialize_cache(to_string_fnc* assigned_large_provider, to_string_fnc* ass
 // ===================================== // 
 
 ValueType large_cache_provider(KeyType key) {
-    ValueType result = get_from_cache(key, large_cache);
-
+    
+    ValueType result = get_from_cache(key, large_values_cache, MAX_LARGE_MEMO_ENTRIES);
+    
     if (result == NULL) {
         result = (*original_large_provider)(key);
-
-        if(key >= 0 && key <= MAX_LARGE_MEMO_ENTRIES)
-            store_in_cache(key, result, large_cache);  
+    
+        if(result)
+            store_in_cache(key, result, large_values_cache, MAX_LARGE_MEMO_ENTRIES); 
+            
     }
     return result;
 }
@@ -84,12 +100,14 @@ ValueType large_cache_provider(KeyType key) {
 // ===================================== // 
 
 ValueType small_cache_provider(KeyType key) {
-    ValueType result = get_from_cache(key, small_cache); 
+
+    ValueType result = get_from_cache(key, small_values_cache, MAX_SMALL_MEMO_ENTRIES);
     
     if (result == NULL) {
         result = (*original_small_provider)(key);
-
-        store_in_cache(key, result, small_cache);  
+        
+        if (result)
+            store_in_cache(key, result, small_values_cache, MAX_SMALL_MEMO_ENTRIES);  
     }
     return result;
 }
@@ -100,15 +118,15 @@ ValueType small_cache_provider(KeyType key) {
 // stored at that index.                 //
 // ===================================== // 
 
-ValueType get_from_cache(KeyType key, ValueType* cache) {
-   
-    if (key < 0 || key >= MAX_LARGE_MEMO_ENTRIES)
-        return NULL; 
+ValueType get_from_cache(KeyType key, ValueType* cache, int max_size) {
+
+    if (key < 0 || key >= max_size)
+        return NULL;  
 
     if (cache[key][0] != '\0') {
         return cache[key];
     }
-
+     
     return NULL;  
 }
 
@@ -122,7 +140,7 @@ ValueType get_from_cache(KeyType key, ValueType* cache) {
 // key index.                            //
 // ===================================== // 
 
-void store_in_cache(KeyType key, ValueType value, ValueType* cache) {
+void store_in_cache(KeyType key, ValueType value, ValueType* cache, int max_size) {
 
     if (key < 0 || key >= MAX_LARGE_MEMO_ENTRIES)
         return;  
@@ -141,15 +159,15 @@ void print_cache(){
     printf("LARGE CACHE CONTENT\n");
 
     for (int ix = 0; ix < MAX_LARGE_MEMO_ENTRIES; ix++) {
-        if(large_cache[ix][0] != '\0')
-            printf("Key %d, Value: [%s]\n", ix, large_cache[ix]);
+        if(large_values_cache[ix][0] != '\0')
+            printf("Key %d, Value: [%s]\n", ix, large_values_cache[ix]);
     }
 
     printf("\nSMALL CACHE CONTENT\n");
     
     for (int ix = 0; ix < MAX_SMALL_MEMO_ENTRIES; ix++) {
-        if(small_cache[ix][0] != '\0')
-            printf("Key %d, Value: [%s]\n", ix, small_cache[ix]);
+        if(small_values_cache[ix][0] != '\0')
+            printf("Key %d, Value: [%s]\n", ix, small_values_cache[ix]);
     }
 
 }
@@ -160,19 +178,19 @@ void print_cache(){
 
 void free_cache() {
 
-    if(large_cache){
+    if(large_values_cache){
         for (int ix = 0; ix < MAX_LARGE_MEMO_ENTRIES; ix++) {
-            free(large_cache[ix]);  
+            free(large_values_cache[ix]);  
         }
-        free(large_cache);  
-        large_cache = NULL; 
+        free(large_values_cache);  
+        large_values_cache = NULL; 
     }
 
-    if(small_cache){
+    if(small_values_cache){
         for (int ix = 0; ix < MAX_SMALL_MEMO_ENTRIES; ix++) {
-            free(small_cache[ix]);  
+            free(small_values_cache[ix]);  
         }
-        free(small_cache); 
-        small_cache = NULL; 
+        free(small_values_cache); 
+        small_values_cache = NULL; 
     }
 }

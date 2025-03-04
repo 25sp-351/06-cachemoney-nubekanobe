@@ -5,16 +5,13 @@
 #include "constants.h"
 
 // =============  Function prototype ================ // 
-
 void prepend_string(char* destination, char* source);
 
-// ===== Declaring arrays used to build strings======= //
-
+// ===== Declaring arrays used to build strings====== //
 static char cents_string[BUFFER_SIZE]; 
 static char dollars_string[BUFFER_SIZE];
 
-// strings represent integers for conversion to string //
-
+// ====== Initializing integer strings =============== //
 const char* ones_and_teens[] = {
     "", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
     "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", 
@@ -40,7 +37,7 @@ char* cents_to_string(long long int total_cents) {
     cents_string[0] = '\0';
 
     if(total_cents == 1){
-        strcpy_s(cents_string, BUFFER_SIZE, "one cent"); 
+        strcpy(cents_string, "one cent"); 
         return cents_string; 
     }
 
@@ -86,7 +83,7 @@ char* dollars_to_string(long long int total_dollars) {
     }
 
     if(total_dollars == 1){
-        strcpy_s(dollars_string, BUFFER_SIZE, "one dollar"); 
+        strcpy(dollars_string, "one dollar"); 
         return dollars_string; 
     }
 
@@ -131,7 +128,7 @@ char* dollars_to_string(long long int total_dollars) {
         prepend_string(dollars_string, current_segment);
     }
 
-    strcat_s(dollars_string, BUFFER_SIZE, "dollars"); 
+    strcat(dollars_string, "dollars"); 
     return dollars_string; 
 }
 
@@ -149,8 +146,8 @@ char* dollars_to_string(long long int total_dollars) {
 void prepend_string(char* destination, char* segment_to_prepend) {
 
     char temp[BUFFER_SIZE];
-    strcpy_s(temp, BUFFER_SIZE, destination);
-    strcpy_s(destination, BUFFER_SIZE, segment_to_prepend);
-    strcat_s(destination, BUFFER_SIZE, temp);
+    strcpy(temp, destination);
+    strcpy(destination, segment_to_prepend);
+    strcat(destination, temp);
 }
 

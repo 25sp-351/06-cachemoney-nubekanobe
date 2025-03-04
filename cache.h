@@ -9,13 +9,15 @@ typedef long long KeyType;
 typedef char* ValueType;
 
 typedef ValueType (*to_string_fnc)(KeyType);
-// Function pointers available to main
-extern to_string_fnc assigned_large_provider;
-extern to_string_fnc assigned_small_provider; 
 
-// Function prototypes available to main
-void initialize_cache(to_string_fnc* assigned_large_provider, to_string_fnc* assigned_small_provider); 
-void print_cache(); // fordebugging
-void free_cache(); 
+typedef struct {
+    to_string_fnc large_values_provider;
+    to_string_fnc small_values_provider;
+} provider_set;
+
+
+// Function prototype for dynamically loading cache module
+typedef void (*set_provider_fnc)(provider_set *provider);
+set_provider_fnc load_cache_module(const char *module_path);
 
 #endif
