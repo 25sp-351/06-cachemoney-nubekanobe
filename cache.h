@@ -9,10 +9,13 @@ typedef long long KeyType;
 typedef char* ValueType;
 
 typedef ValueType (*to_string_fnc)(KeyType);
+typedef void (*void_function)(void);
 
 typedef struct {
     to_string_fnc large_values_provider;
     to_string_fnc small_values_provider;
+    void_function print;
+    void_function free; 
 } provider_set;
 
 

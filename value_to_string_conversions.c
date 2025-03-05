@@ -37,7 +37,7 @@ char* cents_to_string(long long int total_cents) {
     cents_string[0] = '\0';
 
     if(total_cents == 1){
-        strcpy(cents_string, "one cent"); 
+        strncpy(cents_string, "one cent", BUFFER_SIZE); 
         return cents_string; 
     }
 
@@ -83,7 +83,7 @@ char* dollars_to_string(long long int total_dollars) {
     }
 
     if(total_dollars == 1){
-        strcpy(dollars_string, "one dollar"); 
+        strncpy(dollars_string, "one dollar", BUFFER_SIZE); 
         return dollars_string; 
     }
 
@@ -146,8 +146,8 @@ char* dollars_to_string(long long int total_dollars) {
 void prepend_string(char* destination, char* segment_to_prepend) {
 
     char temp[BUFFER_SIZE];
-    strcpy(temp, destination);
-    strcpy(destination, segment_to_prepend);
-    strcat(destination, temp);
+    strncpy(temp, destination, BUFFER_SIZE);
+    strncpy(destination, segment_to_prepend, BUFFER_SIZE);
+    strncat(destination, temp, BUFFER_SIZE);
 }
 

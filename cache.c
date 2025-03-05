@@ -20,7 +20,6 @@ ValueType get_from_cache(KeyType key, ValueType* cache, int max_size);
 void print_cache();
 void free_cache();
 
-
 // ========= SET_PROVIDER_FUNCTION ======= //
 // Sets the assigned provider to the cache //
 // provider functions.                    //
@@ -32,6 +31,9 @@ void set_provider(provider_set *provider) {
     original_small_provider = provider->small_values_provider;
     provider->large_values_provider = large_cache_provider;
     provider->small_values_provider = small_cache_provider;
+
+    provider->free = free_cache;
+    provider->print = print_cache; 
 
     initialize_cache();
 }

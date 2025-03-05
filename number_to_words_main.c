@@ -26,7 +26,9 @@ int main(int argc, char *argv[])
 
     provider_set providers = {
         providers.large_values_provider = dollars_to_string,
-        providers.small_values_provider = cents_to_string
+        providers.small_values_provider = cents_to_string, 
+        providers.print = NULL, 
+        providers.free = NULL
     }; 
     
     if (argc == 2) {
@@ -64,6 +66,16 @@ int main(int argc, char *argv[])
         printf("%lld = %s\n", money_value_as_integer, result);
     } 
 
+    // DEBUG // 
+    if(providers.print){
+        // printf("Printing cache\n");
+        // providers.print();
+    }
+
+    if (providers.free) {
+        printf("Freeing allocated memory\n");
+        providers.free();
+    }
 
     return 0;
 }
@@ -84,7 +96,7 @@ char *number_to_string(long long int money_value_as_integer, provider_set provid
 
     if (money_value_as_integer == 0)
     {
-        strcpy(result, "zero dollars and zero cents");
+        strncpy(result, "zero dollars and zero cents", BUFFER_SIZE);
         return result;
     }
 
@@ -96,13 +108,13 @@ char *number_to_string(long long int money_value_as_integer, provider_set provid
 
     if (money_value_as_integer < MINIMUM_FOR_DOLLARS)
     {
-        strcpy(result, cents);
+        strncpy(result, cents, BUFFER_SIZE);
         return result;
     }
 
     if (money_value_as_integer >= MINIMUM_FOR_DOLLARS && total_cents == 0)
     {
-        strcpy(result, dollars);
+        strncpy(result, dollars, BUFFER_SIZE);
         return result;
     }
 
