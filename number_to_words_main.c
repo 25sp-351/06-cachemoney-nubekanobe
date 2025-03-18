@@ -67,10 +67,12 @@ int main(int argc, char *argv[])
     } 
 
     // DEBUG // 
+    /*
     if(providers.print){
-        // printf("Printing cache\n");
-        // providers.print();
+        printf("Printing cache\n");
+        providers.print();
     }
+    */
 
     if (providers.free) {
         printf("Freeing allocated memory\n");
