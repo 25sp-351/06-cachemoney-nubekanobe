@@ -27,6 +27,7 @@ int main(int argc, char *argv[])
     provider_set providers = {
         providers.large_values_provider = dollars_to_string,
         providers.small_values_provider = cents_to_string, 
+        providers.initialize = NULL, 
         providers.print = NULL, 
         providers.free = NULL
     }; 
@@ -40,6 +41,10 @@ int main(int argc, char *argv[])
             fprintf(stderr, "Failed to set cache provider from module.\n");
             return 1;
         }
+    }
+
+    if (providers.initialize) {
+        providers.initialize();
     }
 
     char buffer[BUFFER_SIZE];

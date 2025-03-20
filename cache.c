@@ -31,11 +31,9 @@ void set_provider(provider_set *provider) {
     original_small_provider = provider->small_values_provider;
     provider->large_values_provider = large_cache_provider;
     provider->small_values_provider = small_cache_provider;
-
+    provider->initialize = initialize_cache; 
     provider->free = free_cache;
     provider->print = print_cache; 
-
-    initialize_cache();
 }
 
 // ======== INITIALIZE_CACHE ============= //
